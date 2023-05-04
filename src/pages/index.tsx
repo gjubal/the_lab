@@ -3,22 +3,11 @@ import Head from "next/head";
 import ProfilePicture from "../../public/pp.png";
 import Image from "next/image";
 import { FiPlusCircle } from "react-icons/fi";
-
-{
-  /* <Link
-  className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-  href="https://create.t3.gg/en/usage/first-steps"
-  target="_blank"
->
-  <h3 className="text-2xl font-bold">First Steps →</h3>
-  <div className="text-lg">
-    Just the basics - Everything you need to know to set up your
-    database and authentication.
-  </div>
-</Link> */
-}
+import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 
 const Home: NextPage = () => {
+  const { isSignedIn } = useAuth();
   return (
     <>
       <Head>
@@ -26,8 +15,22 @@ const Home: NextPage = () => {
         <meta name="description" content="Project" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center gap-8">
-        Go to /dashboard
+      <main className="flex min-h-screen flex-col items-center justify-center gap-16">
+        <h1 className="text-5xl font-thin">the lab</h1>
+
+        {isSignedIn ? (
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-zinc-800 hover:bg-white/20"
+            href="/dashboard"
+          >
+            <h3 className="text-2xl font-bold">Go to /dashboard</h3>
+          </Link>
+        ) : (
+          <div className="flex gap-4">
+            <SignInButton />
+            <SignUpButton />
+          </div>
+        )}
       </main>
     </>
   );

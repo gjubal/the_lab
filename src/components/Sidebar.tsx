@@ -1,6 +1,6 @@
 import { AiTwotoneExperiment } from "react-icons/ai";
 import { FiClipboard } from "react-icons/fi";
-import { BiHome, BiLogOutCircle, BiUser } from "react-icons/bi";
+import { BiHome } from "react-icons/bi";
 import { BsBroadcast } from "react-icons/bs";
 import { type ReactElement } from "react";
 import Link from "next/link";
@@ -29,16 +29,6 @@ export default function Sidebar() {
               title="Messengers"
               linkHref="/files/messengers"
               icon={<FiClipboard size={26} />}
-            />
-            <SidebarOption
-              title="Profile"
-              linkHref="/profile"
-              icon={<BiUser size={26} />}
-            />
-            <SidebarOption
-              title="Log out"
-              linkHref="/"
-              icon={<BiLogOutCircle size={26} />}
             />
           </ul>
         </div>

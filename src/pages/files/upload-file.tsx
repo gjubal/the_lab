@@ -1,16 +1,20 @@
 import { type NextPage } from "next/types";
 import Sidebar from "../../components/Sidebar";
 import NavTabCollection from "../../components/NavTabCollection";
+import { UserButton } from "@clerk/nextjs";
 
 const UploadFile: NextPage = () => {
   return (
     <div className="flex">
       <Sidebar />
       <div className="container mx-auto mt-12 px-16">
-        <nav className="flex flex-row justify-start gap-12">
-          <h1 className="mb-6 text-3xl font-bold">Bulk Upload</h1>
+        <nav className="flex justify-between">
+          <div className="mr-2 flex justify-start gap-12">
+            <h1 className="mb-6 text-3xl font-bold">Bulk Upload</h1>
+            <NavTabCollection currentTabName="Bulk upload messengers" />
+          </div>
 
-          <NavTabCollection currentTabName="Bulk upload messengers" />
+          <UserButton afterSignOutUrl="/sign-in" showName />
         </nav>
 
         <UploadFileSection />
