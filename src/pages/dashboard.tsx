@@ -3,14 +3,17 @@ import Sidebar from "../components/Sidebar";
 import ChartImage from "../../public/fc3noor2.png";
 import Image from "next/image";
 import { ProfileTile, ActionTile } from ".";
+import { UserButton } from "@clerk/nextjs";
 
 const Dashboard: NextPage = () => {
   return (
     <div className="flex">
       <Sidebar />
       <div className="container mx-auto mt-12 px-16">
-        <nav className="mb-6 flex flex-col items-center justify-between sm:flex-row">
+        <nav className="mb-6 flex items-center justify-between sm:flex-row">
           <h1 className="mb-3 text-3xl font-bold md:mb-0">Dashboard</h1>
+
+          <UserButton afterSignOutUrl="/sign-in" showName />
         </nav>
 
         <MainFromAlvaro />

@@ -5,6 +5,7 @@ import { TiFolderDelete } from "react-icons/ti";
 import Sidebar from "../../components/Sidebar";
 import NavTabCollection from "../../components/NavTabCollection";
 import { BsPersonPlus } from "react-icons/bs";
+import { UserButton } from "@clerk/nextjs";
 
 type Modal = {
   title: "Account" | "Group";
@@ -30,9 +31,13 @@ const Groups: NextPage = () => {
     <div className="flex">
       <Sidebar />
       <div className="container mx-auto mt-12 px-16">
-        <nav className="flex flex-row justify-start gap-12">
-          <h1 className="mb-6 text-3xl font-bold">Groups</h1>
-          <NavTabCollection currentTabName="Groups" />
+        <nav className="flex justify-between">
+          <div className="mr-2 flex justify-start gap-12">
+            <h1 className="mb-6 text-3xl font-bold">Groups</h1>
+            <NavTabCollection currentTabName="Groups" />
+          </div>
+
+          <UserButton afterSignOutUrl="/sign-in" showName />
         </nav>
 
         <GroupTable
