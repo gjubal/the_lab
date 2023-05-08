@@ -67,7 +67,7 @@ const MessengerTable = ({
 }: {
   setIsOpenAddModal: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { data, isLoading, refetch } = api.messengers.getAll.useQuery();
+  const { data, isLoading } = api.messengers.getAll.useQuery();
 
   const formatDateToString = useCallback((date: Date) => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -111,7 +111,6 @@ const MessengerTable = ({
                     name={messenger.username}
                     dateAdded={formatDateToString(messenger.createdAt)}
                     status={messenger.status}
-                    refetch={refetch}
                   />
                 ))}
               </ul>
@@ -128,7 +127,6 @@ const AccountCell = (props: {
   name: string;
   dateAdded: string;
   status: string;
-  refetch: ReturnType<typeof api.messengers.getAll.useQuery>["refetch"];
 }) => {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
@@ -161,7 +159,6 @@ const AccountCell = (props: {
       {isOpenDeleteModal && (
         <DeleteModal
           id={props.id}
-          refetch={props.refetch}
           setIsOpenDeleteModal={setIsOpenDeleteModal}
         />
       )}
@@ -229,11 +226,20 @@ const AddForm = (props: {
     isError: isGetGroupsError,
   } = api.groups.getAll.useQuery();
 
+  const ctx = api.useContext();
+
+  const { mutate } = api.messengers.create.useMutation({
+    onSuccess: () => {
+      void ctx.messengers.getAll.invalidate();
+    },
+    onError: () => console.log("error adding messenger"),
+  });
+
   const [selectedGroup, setSelectedGroup] = useState<MessengerGroup | null>(
     null
   );
 
-  const onSubmit: SubmitHandler<AddFormProps> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<AddFormProps> = (data) => mutate(data);
 
   useEffect(() => {
     if (addToGroup && selectedGroup) {
@@ -459,12 +465,13 @@ const CloseSvgButton = (props: {
 
 const DeleteModal = (props: {
   id: string;
-  refetch: ReturnType<typeof api.messengers.getAll.useQuery>["refetch"];
   setIsOpenDeleteModal: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const ctx = api.useContext();
+
   const { mutate } = api.messengers.deleteById.useMutation({
-    onSuccess: async () => {
-      await props.refetch();
+    onSuccess: () => {
+      void ctx.messengers.getAll.invalidate();
     },
     onError: () => {
       console.log("Error deleting messenger");
@@ -516,9 +523,9 @@ const DropdownArrow = () => {
         aria-hidden="true"
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         ></path>
       </svg>
     </span>

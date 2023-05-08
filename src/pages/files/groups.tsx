@@ -1,11 +1,19 @@
 import type { NextPage } from "next";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useState,
+  useCallback,
+} from "react";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { TiFolderDelete } from "react-icons/ti";
 import Sidebar from "../../components/Sidebar";
 import NavTabCollection from "../../components/NavTabCollection";
 import { BsPersonPlus } from "react-icons/bs";
 import { UserButton } from "@clerk/nextjs";
+import { api } from "../../utils/api";
+import { LoadingPage } from "../../components/Loading";
+import { type MessengerGroup } from "@prisma/client";
 
 type Modal = {
   title: "Account" | "Group";
@@ -79,9 +87,21 @@ const GroupTable = ({
   setIsOpenEditModal: Dispatch<SetStateAction<boolean>>;
   setIsOpenDeleteModal: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const { data: groups, isLoading } = api.groups.getAll.useQuery();
+  const { data: totalOfGroups } = api.groups.getTotalOfGroups.useQuery();
+
+  const formatDateToString = useCallback((date: Date) => {
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+
+    return `${month}-${day}-${year}`;
+  }, []);
+
+  if (isLoading) return <LoadingPage />;
+
   return (
     <div className="mb-6 mt-8 flex flex-col">
-      {/* <div className="mx-auto w-full max-w-[440px]"> */}
       <div className="mx-auto w-full max-w-5xl">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
@@ -94,7 +114,7 @@ const GroupTable = ({
                   >
                     <div className="flex items-center justify-between">
                       <p className="w-[165px]">Group name</p>
-                      <p>Date created</p>
+                      <p>Date added</p>
                       <p># of accounts</p>
                       <span className="flex gap-3">
                         <button
@@ -117,27 +137,16 @@ const GroupTable = ({
                 </tr>
               </thead>
               <tbody className="flex flex-col divide-y divide-gray-200 bg-white">
-                <GroupCell
-                  name="chocolate prod"
-                  dateCreated="2021-08-01"
-                  accountTotal={4}
-                  setIsOpenEditModal={setIsOpenEditModal}
-                  setIsOpenDeleteModal={setIsOpenDeleteModal}
-                />
-                <GroupCell
-                  name="tate reels"
-                  dateCreated="2021-08-02"
-                  accountTotal={52}
-                  setIsOpenEditModal={setIsOpenEditModal}
-                  setIsOpenDeleteModal={setIsOpenDeleteModal}
-                />
-                <GroupCell
-                  name="bruno boiola"
-                  dateCreated="2021-08-03"
-                  accountTotal={397}
-                  setIsOpenEditModal={setIsOpenEditModal}
-                  setIsOpenDeleteModal={setIsOpenDeleteModal}
-                />
+                {groups?.map((group: MessengerGroup) => (
+                  <GroupCell
+                    key={group.id}
+                    name={group.name}
+                    dateCreated={formatDateToString(group.createdAt)}
+                    accountTotal={totalOfGroups ?? -1}
+                    setIsOpenEditModal={setIsOpenEditModal}
+                    setIsOpenDeleteModal={setIsOpenDeleteModal}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
