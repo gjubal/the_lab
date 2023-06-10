@@ -469,7 +469,7 @@ const DeleteModal = (props: {
 }) => {
   const ctx = api.useContext();
 
-  const { mutate } = api.messengers.deleteById.useMutation({
+  const { mutate } = api.messengers.delete.useMutation({
     onSuccess: () => {
       void ctx.messengers.getAll.invalidate();
     },

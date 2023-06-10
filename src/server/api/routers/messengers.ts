@@ -2,6 +2,15 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 
+export const messengerSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  password: z.string(),
+  status: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
 export const messengersRouter = createTRPCRouter({
   getAll: privateProcedure.query(({ ctx }) => {
     return ctx.prisma.messenger.findMany({
@@ -10,7 +19,7 @@ export const messengersRouter = createTRPCRouter({
       },
     });
   }),
-  deleteById: privateProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string(),
