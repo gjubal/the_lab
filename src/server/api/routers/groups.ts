@@ -3,13 +3,24 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 
 export const groupsRouter = createTRPCRouter({
-  getAll: privateProcedure.query(({ ctx }) => {
-    return ctx.prisma.messengerGroup.findMany({
-      where: {
-        userId: ctx.auth.userId,
-      },
-    });
-  }),
+  getAll: privateProcedure
+    .input(
+      z
+        .object({
+          includeMessengers: z.boolean(),
+        })
+        .optional()
+    )
+    .query(({ ctx, input }) => {
+      return ctx.prisma.messengerGroup.findMany({
+        where: {
+          userId: ctx.auth.userId,
+        },
+        include: {
+          messengers: input?.includeMessengers,
+        },
+      });
+    }),
   getGroupById: privateProcedure
     .input(
       z.object({
@@ -95,6 +106,9 @@ export const groupsRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
+        include: {
+          messengers: true,
+        },
       });
 
       if (!existingGroup) {
@@ -103,6 +117,18 @@ export const groupsRouter = createTRPCRouter({
           message: "A group with the ID provided does not exist.",
         });
       }
+      await ctx.prisma.messengerGroup.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          messengers: {
+            disconnect: existingGroup.messengers.map((messenger) => ({
+              id: messenger.id,
+            })),
+          },
+        },
+      });
 
       return ctx.prisma.messengerGroup.update({
         where: {
