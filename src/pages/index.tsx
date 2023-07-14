@@ -27,8 +27,8 @@ const Home: NextPage = () => {
           </Link>
         ) : (
           <div className="flex gap-4">
-            <SignInButton />
-            <SignUpButton />
+            <SignInButton afterSignInUrl="/dashboard" />
+            <SignUpButton afterSignUpUrl="/dashboard" />
           </div>
         )}
       </main>
