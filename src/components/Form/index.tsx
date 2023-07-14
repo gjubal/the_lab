@@ -1,12 +1,12 @@
 import { FormFooter } from "./FormFooter";
-import { FormHeader } from "./FormHeader";
+import { FormPopupHeader } from "./FormPopupHeader";
 import { FormMessengersList } from "./FormMessengersList";
 import { FormRoot } from "./FormRoot";
 import { FormTextInput } from "./FormTextInput";
 
 export const Form = {
   Root: FormRoot,
-  Header: FormHeader,
+  PopupHeader: FormPopupHeader,
   TextInput: FormTextInput,
   MessengersList: FormMessengersList,
   Footer: FormFooter,

@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
+import { readRowsFromFile } from "../../../utils/readRowsFromFile";
+import { type Messenger } from "@prisma/client";
 
 export const messengerSchema = z.object({
   id: z.string(),
@@ -79,5 +81,64 @@ export const messengersRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  bulkCreate: privateProcedure
+    .input(
+      z.object({
+        fileContent: z.string(),
+        groupId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const group = await ctx.prisma.messengerGroup.findUnique({
+        where: {
+          id: input.groupId,
+        },
+      });
+
+      if (!group) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Group provided does not correspond to any existing group",
+        });
+      }
+
+      if (!input.fileContent) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "File must be uploaded to bulk create messengers",
+        });
+      }
+
+      const rows = readRowsFromFile(input.fileContent);
+      let createdMessengers: Messenger[] = [];
+
+      for (const row of rows) {
+        const createdMessenger = await ctx.prisma.messenger.create({
+          data: {
+            username: row.username,
+            password: row.password,
+            status: "Inactive",
+            userId: ctx.auth.userId,
+          },
+        });
+
+        await ctx.prisma.messengerGroup.update({
+          where: {
+            id: group.id,
+          },
+          data: {
+            messengers: {
+              connect: {
+                id: createdMessenger.id,
+              },
+            },
+          },
+        });
+
+        createdMessengers = [...createdMessengers, createdMessenger];
+      }
+
+      return createdMessengers;
     }),
 });

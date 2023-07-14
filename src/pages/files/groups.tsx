@@ -189,7 +189,7 @@ const AddModal = ({ isOpenAddModal, setIsOpenAddModal }: AddModalProps) => {
         <div className="relative rounded border border-gray-400 bg-white px-5 py-8 shadow-md md:px-10">
           {isOpenAddModal && (
             <Form.Root type="add" setIsOpenAddModal={setIsOpenAddModal}>
-              <Form.Header title="Group" />
+              <Form.PopupHeader title="Group" />
               <Form.TextInput title="Group" />
               <Form.MessengersList />
               <Form.Footer
@@ -219,7 +219,7 @@ const EditModal = ({
               id={id}
               setIsOpenEditModal={setIsOpenEditModal}
             >
-              <Form.Header title="Group" />
+              <Form.PopupHeader title="Group" />
               <Form.TextInput title="Group" id={id} />
               <Form.MessengersList id={id} />
               <Form.Footer
